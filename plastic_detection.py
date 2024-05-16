@@ -12,7 +12,7 @@ import re
 import time
 import torch
 
-torch.cuda.set_device(0)
+#torch.cuda.set_device(0)
 '''
 def parse_arguments() ->argparse.Namespace:
     parser = argparse.ArgumentParser(description="Plastic Classification")
@@ -24,9 +24,12 @@ def parse_arguments() ->argparse.Namespace:
     )
     args = parser.parse_args()
     return args'''
-
+#extract = ''
+var_data = ''
 def main():
-    my_text= ""
+    global var_data
+    #global extract
+    #LandingWindow.close()
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 320)
@@ -59,9 +62,12 @@ def main():
                 frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
                 cv2.imshow("plastic detection", frame)
                 if labels:
+                    time.sleep(0.5)
                     extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
-                    my_text = extract
-                    print(extract)
+                    var_data = extract
+                    #print(var_data)
+                    print(get_data())
+                    
                 else:
                     print("No detections")
                 if (cv2.waitKey(30) == 27):
@@ -71,10 +77,14 @@ def main():
         
     else:
         print("cannot open camera")
-        
-    print(my_text)
+    
     cap.release()
     cv2.destroyAllWindows()
+
+def get_data():
+    my_data = var_data
+    return my_data
+
 
 if __name__ == "__main__":
     main()
