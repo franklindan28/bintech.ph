@@ -79,7 +79,7 @@ class Login(QMainWindow):
         self.showFullScreen()
 
     def clicked_Registration(self):
-        self._registration = registration.Register()
+        self._registration = registration.Register(self.labels)
         self.hide()
         self._registration.show()
         

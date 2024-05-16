@@ -8,12 +8,14 @@ import sqlite3
 import login
 
 class Register(QMainWindow):
-    def __init__(self):
+    def __init__(self, labels):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Login")
         self.setWindowIcon(QIcon("Images/bintech logo.png"))
         self.setStyleSheet("background-color : #FFFAF3")
+
+        self.labels = labels
     
         layout = QHBoxLayout()
 
@@ -152,7 +154,7 @@ class Register(QMainWindow):
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
         
         self.hide()
-        self._login = login.Login()
+        self._login = login.Login(self.labels)
         self._login.show()
         
         

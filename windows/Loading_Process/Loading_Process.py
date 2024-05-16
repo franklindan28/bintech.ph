@@ -56,7 +56,7 @@ class Loading_Process(QMainWindow):
                                         "}")   
         
         self.showFullScreen()
-        time.sleep(3)
+        # time.sleep(3)
         self.progress = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_progress)
@@ -74,6 +74,32 @@ class Loading_Process(QMainWindow):
             extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
             var_data = extract
             print(var_data)
+
+            conn = sqlite3.connect('bintech.db')
+            cursor = conn.cursor()
+
+            cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
+                    id INTEGER PRIMARY KEY,
+                    user_id INTEGER,
+                    plastic_type TEXT NOT NULL,
+                    date_created datetime default current_timestamp,
+                    FOREIGN KEY (user_id) 
+                        REFERENCES users (id) 
+                            ON DELETE CASCADE 
+                            ON UPDATE NO ACTION                    
+                 )''')
+            
+            cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
+            user = cursor.fetchone()
+            # print(user)
+            id = user[0]
+
+            cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, var_data))
+            conn.commit()
+
+            # Close cursor and connection
+            cursor.close()
+            conn.close()
             
 
             self.timer.stop()

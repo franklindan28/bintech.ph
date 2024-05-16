@@ -31,13 +31,23 @@ class User_Dashboard_Window(QMainWindow):
         greeting.setStyleSheet("QLabel {font-size: 80px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
         layout.addWidget(greeting)
 
+        self.hdpe = 0
+        self.pet = 0
+        self.pp = 0
+        self.other = 0
+        self.getData()
+
+        self.PET_Plastic_Type = QLabel(self)
+        self.HDPE_Plastic_Type = QLabel(self)
+        self.PP_Plastic_Type = QLabel(self)
+        self.OTHER_Plastic_Type = QLabel(self)
+
         self.plastic_type()
         self.PET_plastic_type()
         self.HDPE_plastic_type()
         self.PP_plastic_type()
         self.OTHER_plastic_type()
         self.back_btn()
-        
 
         self.showFullScreen()
         
@@ -47,7 +57,6 @@ class User_Dashboard_Window(QMainWindow):
         back_button.setStyleSheet("QPushButton { font-size: 40px; background-color: #699913; font-family: Roboto;font-weight: 900; font-style: normal; color: white;  border-radius: 20px; }" "QPushButton:pressed { background-color: #0E7470; color: #FFFFFF;  }" )
         back_button.clicked.connect(self.clicked_Back)  # Connect to clicked_Back without passing any arguments
 
-
     def plastic_type(self):
         Plastic_Type = QLabel(self)
         Plastic_Type.setText("Plastic Type")
@@ -56,32 +65,28 @@ class User_Dashboard_Window(QMainWindow):
         Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def PET_plastic_type(self):
-        PET_Plastic_Type = QLabel(self)
-        PET_Plastic_Type.setText("PET")
-        PET_Plastic_Type.move(300,375)
-        PET_Plastic_Type.resize(300,50)
-        PET_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
+        self.PET_Plastic_Type.setText("PET " + str(self.pet))
+        self.PET_Plastic_Type.move(300,375)
+        self.PET_Plastic_Type.resize(300,50)
+        self.PET_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
 
     def HDPE_plastic_type(self):
-        HDPE_Plastic_Type = QLabel(self)
-        HDPE_Plastic_Type.setText("HDPE")
-        HDPE_Plastic_Type.move(300,450)
-        HDPE_Plastic_Type.resize(300,50)
-        HDPE_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
+        self.HDPE_Plastic_Type.setText("HDPE: " + str(self.hdpe))
+        self.HDPE_Plastic_Type.move(300,450)
+        self.HDPE_Plastic_Type.resize(300,50)
+        self.HDPE_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
 
     def PP_plastic_type(self):
-        HDPE_Plastic_Type = QLabel(self)
-        HDPE_Plastic_Type.setText("PP")
-        HDPE_Plastic_Type.move(300,525)
-        HDPE_Plastic_Type.resize(300,50)
-        HDPE_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
+        self.PP_Plastic_Type.setText("PP: " + str(self.pp))
+        self.PP_Plastic_Type.move(300,525)
+        self.PP_Plastic_Type.resize(300,50)
+        self.PP_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
 
     def OTHER_plastic_type(self):
-        HDPE_Plastic_Type = QLabel(self)
-        HDPE_Plastic_Type.setText("OTHER")
-        HDPE_Plastic_Type.move(300,600)
-        HDPE_Plastic_Type.resize(300,50)
-        HDPE_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
+        self.OTHER_Plastic_Type.setText("OTHERS: " + str(self.other))
+        self.OTHER_Plastic_Type.move(300,600)
+        self.OTHER_Plastic_Type.resize(300,50)
+        self.OTHER_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
 
     def username_retrieve(self, email):
         try:
@@ -115,6 +120,41 @@ class User_Dashboard_Window(QMainWindow):
         self.hide()
         self._user_account.show()
         
+    def getData(self):
+        try:
+            # Connect to SQLite database
+            conn = sqlite3.connect('bintech.db')
+            cursor = conn.cursor()
+
+            # GET USER ID
+            cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
+            user = cursor.fetchone()
+            # print(user)
+            id = user[0]
+
+            # Execute query to verify user credentials
+            cursor.execute("SELECT * FROM plastics WHERE user_id = ?", (id,))
+            data = cursor.fetchall()
+            print("DATA: ")
+            print(data)
+
+            # Close cursor and connection
+            cursor.close()
+            conn.close()
+
+            for item in data:
+                if (item[2] == "HDPE"):
+                    self.hdpe += 1
+                elif(item[2] == "PP"):
+                    self.pp += 1
+                elif(item[2] == "PET"):
+                    self.pet += 1
+                else:
+                    self.other += 1
+
+
+        except sqlite3.Error as e:
+            QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
 
 
 if __name__ == "__main__":
