@@ -23,7 +23,7 @@ import Drop
 
 
 class Add_on(QMainWindow):
-    def __init__(self, username):
+    def __init__(self, username, labels):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Add On")
@@ -31,6 +31,7 @@ class Add_on(QMainWindow):
         self.setStyleSheet("background-color : #FFFAF3")
 
         self.user_name = username
+        self.labels = labels
     
         layout = QHBoxLayout()
 
@@ -47,13 +48,13 @@ class Add_on(QMainWindow):
         self.showFullScreen()
 
    
-    def clicked_add(self, user_name):
-            self._drop = Drop.Drop(user_name)  # Pass user's email to the constructor
+    def clicked_add(self):
+            self._drop = Drop.Drop(self.user_name, self.labels)  # Pass user's email to the constructor
             self.hide()
             self._drop.show()
     
     def clicked_done(self):
-            self._user_account = user_account.User_Account(self.user_name)  # Pass user's email to the constructor
+            self._user_account = user_account.User_Account(self.user_name, self.labels)  # Pass user's email to the constructor
             self.hide()
             self._user_account.show()
 

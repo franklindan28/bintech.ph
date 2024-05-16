@@ -6,6 +6,21 @@ from PyQt5.QtCore import Qt
 import sqlite3
 
 
+import ultralytics
+import cv2
+import argparse
+#import onnxruntime as ort
+
+from ultralytics import YOLO
+import supervision as sv
+import numpy as np
+
+from pprint import pprint
+import re
+import time
+import torch
+
+
 sys.path.insert(1,'windows/Registration')
 import registration
 
@@ -13,12 +28,14 @@ sys.path.insert(2,'windows/Account')
 import user_account
 
 class Login(QMainWindow):
-    def __init__(self):
+    def __init__(self, labels):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Login")
         self.setWindowIcon(QIcon("Images/bintech logo.png"))
         self.setStyleSheet("background-color : #FFFAF3")
+
+        self.labels = labels
     
         layout = QHBoxLayout()
 
@@ -97,7 +114,7 @@ class Login(QMainWindow):
             
             if user:
                 username = user[2]
-                self._user_account = user_account.User_Account(username)
+                self._user_account = user_account.User_Account(username, self.labels)
                 self.hide()
                 self._user_account.show()
             else:
@@ -109,6 +126,66 @@ class Login(QMainWindow):
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    ex = Login()
-    sys.exit(app.exec_())
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 320)
+
+    model = YOLO('best 2.pt', task='detect')
+   
+    box_annotator = sv.BoxAnnotator(
+        thickness=2,                                                                      
+        text_thickness=2,
+        text_scale=1
+    )
+    
+    if cap.isOpened():
+        success, img = cap.read()
+        print(success)
+
+        if success:
+            success, frame = cap.read()
+            frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
+    
+            #pprint(dir(model(frame)[0]))
+            result = model(frame,max_det=1)[0]
+            detections=sv.Detections.from_yolov8(result)
+            labels = [
+                f"{model.model.names[class_id]} {confidence:0.2f}"
+                for _, confidence, class_id, _
+                in detections
+                ]
+
+            frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
+            cv2.imshow("plastic detection", frame)
+
+            # if labels:
+            #     time.sleep(0.5)
+            #     extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
+            #     var_data = extract
+            #     print(var_data)
+                
+
+            app = QApplication(sys.argv)
+            ex = Login(labels)
+            sys.exit(app.exec_())
+            # while True:                                                                                             
+            #     
+            #     if labels:
+            #         time.sleep(0.5)
+            #         extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
+            #         var_data = extract
+            #         #print(var_data)
+            #         print(get_data())
+                    
+            #     else:
+            #         print("No detections")
+            #     if (cv2.waitKey(30) == 27):
+            #         break	
+        else:
+            print("cannot capture frames")
+        
+    else:
+        print("cannot open camera")
+    
+    cap.release()
+    cv2.destroyAllWindows()

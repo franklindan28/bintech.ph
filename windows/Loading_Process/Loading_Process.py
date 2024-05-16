@@ -7,14 +7,30 @@ import sqlite3
 sys.path.insert(5,'windows/Add_On')
 import Add_On
 
+
+import ultralytics
+import cv2
+import argparse
+#import onnxruntime as ort
+
+from ultralytics import YOLO
+import supervision as sv
+import numpy as np
+
+from pprint import pprint
+import re
+import time
+import torch
+
 class Loading_Process(QMainWindow):
-    def __init__(self, username):
+    def __init__(self, username, labels):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Loading Process")
         self.setWindowIcon(QIcon("Images/bintech logo.png"))
         self.setStyleSheet("background-color : #FFFAF3")
         self.user_name = username
+        self.labels = labels
 
         layout = QHBoxLayout()
 
@@ -38,21 +54,48 @@ class Loading_Process(QMainWindow):
                                         "background-color: #699913;"
                                         "border-radius: 10px;" 
                                         "}")   
-
+        
+        self.showFullScreen()
+        time.sleep(3)
         self.progress = 0
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_progress)
-        self.timer.start(0)
+        self.timer.start(1000)
 
     def update_progress(self):
-        self.progress += 1
-        self.progress_bar.setValue(self.progress)
-        
-        if self.progress >= 100:
+          
+        # self.progress += 1
+        # self.progress_bar.setValue(self.progress)
+
+        if self.labels:
+            self.progress = 100
+            self.progress_bar.setValue(self.progress)
+
+            extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
+            var_data = extract
+            print(var_data)
+            
+
             self.timer.stop()
-            QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
-            QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
-            self.showFullScreen()
+            # QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
+            # QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
+            self.add()
+        else:
+            print("No detections")
+            self.progress += 2
+            self.progress_bar.setValue(self.progress)
+        #         #print(get_data())
+        #     # else:
+        #     #     print("No detections")
+        #     if (cv2.waitKey(30) == 27):
+        #         break
+
+
+        # if self.progress >= 100:
+        #     self.timer.stop()
+        #     QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
+        #     QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
+        #     self.showFullScreen()
 
     def reset_loading(self):
         self.progress = 0
@@ -61,7 +104,7 @@ class Loading_Process(QMainWindow):
         
 
     def add(self):
-        self._add_on = Add_On.Add_on(self.user_name)  
+        self._add_on = Add_On.Add_on(self.user_name, self.labels)  
         self.hide()
         self._add_on.show() 
 

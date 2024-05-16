@@ -20,14 +20,15 @@ sys.path.insert(4,'windows/Drop')
 import Drop
 
 class User_Account(QMainWindow):
-    def __init__(self, user_name):
+    def __init__(self, user_name, labels):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("User Account")
         self.setWindowIcon(QIcon("Images/bintech logo.png"))
         self.setStyleSheet("background-color : #FFFAF3")
         self.user_name = user_name
-    
+        self.labels = labels
+        
         layout = QHBoxLayout()
 
         greeting = QLabel(self)
@@ -61,7 +62,7 @@ class User_Account(QMainWindow):
         self.showFullScreen()
 
     def clicked_Start(self):
-        self._Drop = Drop.Drop(self.user_name)
+        self._Drop = Drop.Drop(self.user_name, self.labels)
         self.hide()
         self._Drop.show()
 
@@ -75,7 +76,7 @@ class User_Account(QMainWindow):
             self._login.show()
 
     def clicked_User_Dashboard(self):
-        self._user_dashboard = user_dashboard.User_Dashboard_Window(self.user_name)
+        self._user_dashboard = user_dashboard.User_Dashboard_Window(self.user_name, self.labels)
         self.hide()
         self._user_dashboard.show()   
 

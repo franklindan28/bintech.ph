@@ -25,13 +25,14 @@ sys.path.insert(6,'windows/Loading_Process')
 import Loading_Process
 
 class Drop(QMainWindow):
-    def __init__(self, username):
+    def __init__(self, username, labels):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Drop")
         self.setWindowIcon(QIcon("Images/bintech logo.png"))
         self.setStyleSheet("background-color : #FFFAF3")
         self.user_name = username
+        self.labels = labels
 
         layout = QHBoxLayout()
 
@@ -62,6 +63,19 @@ class Drop(QMainWindow):
 
         self.showFullScreen()
 
+        # while True:                                                                                             
+        #     if self.labels:
+        #         time.sleep(0.5)
+        #         extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
+        #         var_data = extract
+        #         print(var_data)
+
+        #         #print(get_data())
+        #     # else:
+        #     #     print("No detections")
+        #     if (cv2.waitKey(30) == 27):
+        #         break
+
     def username_retrieve(self, email):
         try:
             # Connect to SQLite database
@@ -91,17 +105,17 @@ class Drop(QMainWindow):
         reply = QMessageBox.question(self, 'Cancel', 'Are you sure you want to cancel?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._user_account = user_account.User_Account(self.user_name) 
+            self._user_account = user_account.User_Account(self.user_name, self.labels) 
             self.hide()
             self._user_account.show()
             
     def clicked_cancel2(self):
-            self._add_on = Add_On.Add_on(self.user_name)  
+            self._add_on = Add_On.Add_on(self.user_name, self.labels)  
             self.hide()
             self._add_on.show() 
 
     def clicked_cancel(self):
-            self._loading_process = Loading_Process.Loading_Process(self.user_name)  
+            self._loading_process = Loading_Process.Loading_Process(self.user_name, self.labels)  
             self.hide()
             self._loading_process.show() 
             self.timer.start(3000)
