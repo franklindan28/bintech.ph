@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Data</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Data</h1>
+    <button id="fetchDataBtn">View User Data</button>
+    <div id="userData"></div>
+
+    <script>
+        document.getElementById("fetchDataBtn").addEventListener("click", function() {
+            fetch("/users")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error fetching user data");
+                    }
+                    return response.json();
+                })
+                .then(userData => {
+                    var tableHtml = "<table><thead><tr><th>ID</th><th>Email</th></tr></thead><tbody>";
+                    userData.forEach(user => {
+                        tableHtml += "<tr><td>" + user.id + "</td><td>" + user.email + "</td></tr>" + user.username + "</td></tr>";
+                    });
+                    tableHtml += "</tbody></table>";
+                    document.getElementById("userData").innerHTML = tableHtml;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        });
+    </script>
+</body>
+</html>
