@@ -71,7 +71,7 @@ class User_Account(QMainWindow):
         reply = QMessageBox.question(self, 'Logout', 'Are you sure you want to logout?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._login = login.Login()
+            self._login = login.Login(self.labels)
             self.close()
             self._login.show()
 

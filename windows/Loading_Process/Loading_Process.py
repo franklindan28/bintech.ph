@@ -22,6 +22,8 @@ import re
 import time
 import torch
 
+import serial
+
 class Loading_Process(QMainWindow):
     def __init__(self, username, labels):
         super().__init__()
@@ -74,6 +76,8 @@ class Loading_Process(QMainWindow):
             extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
             var_data = extract
             print(var_data)
+
+            self.sendToArduino(var_data)
 
             conn = sqlite3.connect('bintech.db')
             cursor = conn.cursor()
@@ -158,6 +162,43 @@ class Loading_Process(QMainWindow):
 
         except sqlite3.Error as e:
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
+
+    def sendToArduino(self, detectionResult):
+        # FOR LINUX
+        #serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
+
+        # FOR WINDOWS
+        serial_ports = ['COM1','COM2', 'COM3', 'COM4']
+        
+        for port in serial_ports:
+            ser = self.establish_serial_connection(port)
+            if ser:
+                break
+        if not ser:
+            print("Failed to establish connection!")
+            return
+
+        try:
+            # while True:
+            #     user_input = input("Enter Command (start): ").upper()
+            #     ser.write(user_input.encode())
+            #     print(f'Sent command: {user_input}')
+            ser.write(detectionResult.encode())
+            print(f'Sent command: {detectionResult}')
+            
+        except KeyboardInterrupt:
+            print("Terminated! Restart the System!")
+            ser.close()
+
+    def establish_serial_connection(self, port):
+        try:
+            ser = serial.Serial(port, baudrate = 115200, timeout=1)
+            print(f"Serial Connection established on {port}")
+            return ser
+        
+        except serial.SerialException:
+            print(f"Failed to establish serial connection on {port}")
+            return None
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

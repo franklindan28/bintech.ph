@@ -77,7 +77,7 @@ class Register(QMainWindow):
         self.showFullScreen()
 
     def clicked_back(self):    
-        self._login = login.Login()
+        self._login = login.Login(self.labels)
         self.close()
         self._login.show()
     
