@@ -13,7 +13,7 @@ sys.path.insert(1,'windows/Account')
 import user_account
 
 class User_Dashboard_Window(QMainWindow):
-    def __init__(self, user_name, labels):
+    def __init__(self, user_name, labels, ser, cap, success, model):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("User Dashboard")
@@ -21,6 +21,10 @@ class User_Dashboard_Window(QMainWindow):
         self.setStyleSheet("background-color : #FFFAF3")
         self.user_name = user_name
         self.labels = labels
+        self.ser = ser
+        self.cap = cap
+        self.success = success
+        self.model = model
         
         layout = QHBoxLayout()
         
@@ -116,7 +120,7 @@ class User_Dashboard_Window(QMainWindow):
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
 
     def clicked_Back(self):
-        self._user_account = user_account.User_Account(self.user_name, self.labels)
+        self._user_account = user_account.User_Account(self.user_name, self.labels, self.ser, self.cap, self.success, self.model)
         self.hide()
         self._user_account.show()
         

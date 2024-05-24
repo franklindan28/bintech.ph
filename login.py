@@ -20,6 +20,7 @@ import re
 import time
 import torch
 
+import serial
 
 sys.path.insert(1,'windows/Registration')
 import registration
@@ -28,14 +29,19 @@ sys.path.insert(2,'windows/Account')
 import user_account
 
 class Login(QMainWindow):
-    def __init__(self, labels):
+    def __init__(self, labels, ser, cap, success, model):
         super().__init__()
+        # self.setWindowModality(Qt.ApplicationModal)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Login")
         self.setWindowIcon(QIcon("Images/bintech logo.png"))
         self.setStyleSheet("background-color : #FFFAF3")
 
         self.labels = labels
+        self.ser = ser
+        self.cap = cap
+        self.success = success
+        self.model = model
     
         layout = QHBoxLayout()
 
@@ -79,7 +85,7 @@ class Login(QMainWindow):
         self.showFullScreen()
 
     def clicked_Registration(self):
-        self._registration = registration.Register(self.labels)
+        self._registration = registration.Register(self.labels, self.ser, self.cap, self.success, self.model)
         self.hide()
         self._registration.show()
         
@@ -114,7 +120,7 @@ class Login(QMainWindow):
             
             if user:
                 username = user[2]
-                self._user_account = user_account.User_Account(username, self.labels)
+                self._user_account = user_account.User_Account(username, self.labels, self.ser, self.cap, self.success, self.model)
                 self.hide()
                 self._user_account.show()
             else:
@@ -124,6 +130,16 @@ class Login(QMainWindow):
 
         except sqlite3.Error as e:
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
+
+def establish_serial_connection(port):
+    try:
+        ser = serial.Serial(port, baudrate = 115200, timeout=1)
+        print(f"Serial Connection established on {port}")
+        return ser
+    
+    except serial.SerialException:
+        print(f"Failed to establish serial connection on {port}")
+        return None
 
 if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
@@ -143,44 +159,58 @@ if __name__ == "__main__":
         print(success)
 
         if success:
-            success, frame = cap.read()
-            frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
-    
-            #pprint(dir(model(frame)[0]))
-            result = model(frame,max_det=1)[0]
-            detections=sv.Detections.from_yolov8(result)
-            labels = [
-                f"{model.model.names[class_id]} {confidence:0.2f}"
-                for _, confidence, class_id, _
-                in detections
-                ]
+            # FOR LINUX
+            serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
 
-            frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
-            #cv2.imshow("plastic detection", frame)
+            # FOR WINDOWS
+            # serial_ports = ['COM1','COM2', 'COM3', 'COM4']
+            
+            for port in serial_ports:
+                ser = establish_serial_connection(port)
+                if ser:
+                    success, frame = cap.read()
+                    frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
+            
+                    #pprint(dir(model(frame)[0]))
+                    result = model(frame,max_det=1)[0]
+                    detections=sv.Detections.from_yolov8(result)
+                    labels = [
+                        f"{model.model.names[class_id]} {confidence:0.2f}"
+                        for _, confidence, class_id, _
+                        in detections
+                        ]
 
-            # if labels:
-            #     time.sleep(0.5)
-            #     extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
-            #     var_data = extract
-            #     print(var_data)
-                
+                    frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
+                    # cv2.imshow("plastic detection", frame)
 
-            app = QApplication(sys.argv)
-            ex = Login(labels)
-            sys.exit(app.exec_())
-            # while True:                                                                                             
-            #     
-            #     if labels:
-            #         time.sleep(0.5)
-            #         extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
-            #         var_data = extract
-            #         #print(var_data)
-            #         print(get_data())
+                    # if labels:
+                    #     time.sleep(0.5)
+                    #     extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
+                    #     var_data = extract
+                    #     print(var_data)
+                        
+
+                    app = QApplication(sys.argv)
+                    ex = Login(labels, ser, cap, success, model)
+                    sys.exit(app.exec_())
+                    # while True:                                                                                             
+                    #     
+                    #     if labels:
+                    #         time.sleep(0.5)
+                    #         extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
+                    #         var_data = extract
+                    #         #print(var_data)
+                    #         print(get_data())
+                            
+                    #     else:
+                    #         print("No detections")
+                    #     if (cv2.waitKey(30) == 27):
+                    #         break
                     
-            #     else:
-            #         print("No detections")
-            #     if (cv2.waitKey(30) == 27):
-            #         break	
+                    
+            if not ser:
+                print("Failed to establish connection!")
+            	
         else:
             print("cannot capture frames")
         

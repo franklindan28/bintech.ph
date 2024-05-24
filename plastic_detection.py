@@ -60,7 +60,7 @@ def main():
                     ]
 
                 frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
-                cv2.imshow("plastic detection", frame)
+                # cv2.imshow("plastic detection", frame)
                 if labels:
                     time.sleep(0.5)
                     extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))

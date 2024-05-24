@@ -22,10 +22,8 @@ import re
 import time
 import torch
 
-import serial
-
 class Loading_Process(QMainWindow):
-    def __init__(self, username, labels):
+    def __init__(self, username, labels, ser, cap, success, model):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Loading Process")
@@ -33,8 +31,19 @@ class Loading_Process(QMainWindow):
         self.setStyleSheet("background-color : #FFFAF3")
         self.user_name = username
         self.labels = labels
+        self.ser = ser
+        self.cap = cap
+        self.success = success
+        self.model = model
 
         layout = QHBoxLayout()
+
+        self.resutlt = QLabel(self)
+        self.resutlt.setText(f"RESULT: ...")  # Display user's email
+        self.resutlt.move(700, 200)
+        self.resutlt.resize(900, 100)
+        self.resutlt.setStyleSheet("QLabel {  font-size: 80px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
+        layout.addWidget(self.resutlt)
 
         greeting = QLabel(self)
         greeting.setText(f"Please Wait")  # Display user's email
@@ -70,12 +79,27 @@ class Loading_Process(QMainWindow):
         # self.progress_bar.setValue(self.progress)
 
         if self.labels:
-            self.progress = 100
-            self.progress_bar.setValue(self.progress)
+            self.success, frame = self.cap.read()
+            frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
+    
+            #pprint(dir(model(frame)[0]))
+            result = self.model(frame,max_det=1)[0]
+            detections=sv.Detections.from_yolov8(result)
+            self.labels = [
+                f"{self.model.model.names[class_id]} {confidence:0.2f}"
+                for _, confidence, class_id, _
+                in detections
+                ]
+
+            # frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
 
             extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
             var_data = extract
             print(var_data)
+            self.resutlt.setText(f"RESULT: {var_data}")
+
+            if(var_data == "OTHERS"):
+                var_data = "OTHER"
 
             self.sendToArduino(var_data)
 
@@ -105,6 +129,13 @@ class Loading_Process(QMainWindow):
             cursor.close()
             conn.close()
             
+            timeLoading = 20
+
+            for i in range(timeLoading):
+                time.sleep(1)
+                self.progress = (i/timeLoading) * 100
+                self.progress = int(self.progress)
+                self.progress_bar.setValue(self.progress)
 
             self.timer.stop()
             # QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
@@ -134,7 +165,7 @@ class Loading_Process(QMainWindow):
         
 
     def add(self):
-        self._add_on = Add_On.Add_on(self.user_name, self.labels)  
+        self._add_on = Add_On.Add_on(self.user_name, self.labels, self.ser, self.cap, self.success, self.model)  
         self.hide()
         self._add_on.show() 
 
@@ -164,41 +195,18 @@ class Loading_Process(QMainWindow):
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
 
     def sendToArduino(self, detectionResult):
-        # FOR LINUX
-        #serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
-
-        # FOR WINDOWS
-        serial_ports = ['COM1','COM2', 'COM3', 'COM4']
-        
-        for port in serial_ports:
-            ser = self.establish_serial_connection(port)
-            if ser:
-                break
-        if not ser:
-            print("Failed to establish connection!")
-            return
-
         try:
             # while True:
             #     user_input = input("Enter Command (start): ").upper()
             #     ser.write(user_input.encode())
             #     print(f'Sent command: {user_input}')
-            ser.write(detectionResult.encode())
+            detectionResult = detectionResult.upper()
+            self.ser.write(detectionResult.encode())
             print(f'Sent command: {detectionResult}')
             
         except KeyboardInterrupt:
             print("Terminated! Restart the System!")
-            ser.close()
-
-    def establish_serial_connection(self, port):
-        try:
-            ser = serial.Serial(port, baudrate = 115200, timeout=1)
-            print(f"Serial Connection established on {port}")
-            return ser
-        
-        except serial.SerialException:
-            print(f"Failed to establish serial connection on {port}")
-            return None
+            self.ser.close()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

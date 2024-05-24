@@ -23,7 +23,7 @@ import Drop
 
 
 class Add_on(QMainWindow):
-    def __init__(self, username, labels):
+    def __init__(self, username, labels, ser, cap, success, model):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Add On")
@@ -32,6 +32,10 @@ class Add_on(QMainWindow):
 
         self.user_name = username
         self.labels = labels
+        self.ser = ser
+        self.cap = cap
+        self.success = success
+        self.model = model
     
         layout = QHBoxLayout()
 
@@ -49,12 +53,12 @@ class Add_on(QMainWindow):
 
    
     def clicked_add(self):
-            self._drop = Drop.Drop(self.user_name, self.labels)  # Pass user's email to the constructor
+            self._drop = Drop.Drop(self.user_name, self.labels, self.ser, self.cap, self.success, self.model)  # Pass user's email to the constructor
             self.hide()
             self._drop.show()
     
     def clicked_done(self):
-            self._user_account = user_account.User_Account(self.user_name, self.labels)  # Pass user's email to the constructor
+            self._user_account = user_account.User_Account(self.user_name, self.labels, self.ser, self.cap, self.success, self.model)  # Pass user's email to the constructor
             self.hide()
             self._user_account.show()
 

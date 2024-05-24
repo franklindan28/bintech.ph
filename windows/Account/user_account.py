@@ -20,7 +20,7 @@ sys.path.insert(4,'windows/Drop')
 import Drop
 
 class User_Account(QMainWindow):
-    def __init__(self, user_name, labels):
+    def __init__(self, user_name, labels, ser, cap, success, model):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("User Account")
@@ -28,6 +28,10 @@ class User_Account(QMainWindow):
         self.setStyleSheet("background-color : #FFFAF3")
         self.user_name = user_name
         self.labels = labels
+        self.ser = ser
+        self.cap = cap
+        self.success = success
+        self.model = model
         
         layout = QHBoxLayout()
 
@@ -62,7 +66,7 @@ class User_Account(QMainWindow):
         self.showFullScreen()
 
     def clicked_Start(self):
-        self._Drop = Drop.Drop(self.user_name, self.labels)
+        self._Drop = Drop.Drop(self.user_name, self.labels, self.ser, self.cap, self.success, self.model)
         self.hide()
         self._Drop.show()
 
@@ -71,12 +75,12 @@ class User_Account(QMainWindow):
         reply = QMessageBox.question(self, 'Logout', 'Are you sure you want to logout?',
                                      QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
         if reply == QMessageBox.Yes:
-            self._login = login.Login(self.labels)
+            self._login = login.Login(self.labels, self.ser, self.cap, self.success, self.model)
             self.close()
             self._login.show()
 
     def clicked_User_Dashboard(self):
-        self._user_dashboard = user_dashboard.User_Dashboard_Window(self.user_name, self.labels)
+        self._user_dashboard = user_dashboard.User_Dashboard_Window(self.user_name, self.labels, self.ser, self.cap, self.success, self.model)
         self.hide()
         self._user_dashboard.show()   
 

@@ -8,7 +8,7 @@ import sqlite3
 import login
 
 class Register(QMainWindow):
-    def __init__(self, labels):
+    def __init__(self, labels, ser, cap, success, model):
         super().__init__()
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setWindowTitle("Login")
@@ -16,6 +16,10 @@ class Register(QMainWindow):
         self.setStyleSheet("background-color : #FFFAF3")
 
         self.labels = labels
+        self.ser = ser
+        self.cap = cap
+        self.success = success
+        self.model = model
     
         layout = QHBoxLayout()
 
@@ -77,7 +81,7 @@ class Register(QMainWindow):
         self.showFullScreen()
 
     def clicked_back(self):    
-        self._login = login.Login(self.labels)
+        self._login = login.Login(self.labels, self.ser, self.cap, self.success, self.model)
         self.close()
         self._login.show()
     
@@ -154,7 +158,7 @@ class Register(QMainWindow):
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
         
         self.hide()
-        self._login = login.Login(self.labels)
+        self._login = login.Login(self.labels, self.ser, self.cap, self.success, self.model)
         self._login.show()
         
         
