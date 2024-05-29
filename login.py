@@ -160,10 +160,10 @@ if __name__ == "__main__":
 
         if success:
             # FOR LINUX
-            serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
+            # serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
 
             # FOR WINDOWS
-            # serial_ports = ['COM1','COM2', 'COM3', 'COM4']
+            serial_ports = ['COM1','COM2', 'COM3', 'COM4']
             
             for port in serial_ports:
                 ser = establish_serial_connection(port)
