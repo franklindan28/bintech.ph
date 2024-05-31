@@ -31,7 +31,7 @@ int defaultDeg = 90; // PP
 void setup() {
   Servo1.attach(servoPin1);
   Servo1.write(178);
-  delay(2000);
+  delay(10000);
   Servo1.detach();
   
   SPI.begin(); 
@@ -146,6 +146,7 @@ void loop() {
     duration = pulseIn(echoPin1, HIGH);
     distance = duration * 0.034 / 2;
     int Bin_level_Sensor  = distance ;
+   // Serial.println(Bin_level_Sensor);
 
    
    if (Bin_level_Sensor <= 10 && Bin_level_Sensor >= 5){
@@ -322,10 +323,10 @@ void flip(){
    delay(2000);
 
    Servo1.detach();
-   delay(2000);
+   delay(7000);
    
    Servo1.attach(servoPin1);
    Servo1.write(178);
-   delay(2000);
+   delay(7000);
    Servo1.detach();
 }
