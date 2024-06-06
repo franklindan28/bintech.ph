@@ -114,7 +114,7 @@ class Loading_Process(QMainWindow):
                 time.sleep(0.5)
 
             print(f"result_detect: {result_detect}")
-            print(f"result_detect: {self.find_most_frequent_max_string(result_detect)}")
+            # print(f"result_detect: {self.find_most_frequent_max_string(result_detect)}")
 
             result_data = self.find_most_frequent_max_string(result_detect)
 
