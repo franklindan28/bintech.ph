@@ -79,55 +79,67 @@ class Loading_Process(QMainWindow):
         # self.progress_bar.setValue(self.progress)
 
         if self.labels:
-            self.success, frame = self.cap.read()
-            frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
-    
-            #pprint(dir(model(frame)[0]))
-            result = self.model(frame,max_det=1)[0]
-            detections=sv.Detections.from_yolov8(result)
-            self.labels = [
-                f"{self.model.model.names[class_id]} {confidence:0.2f}"
-                for _, confidence, class_id, _
-                in detections
-                ]
+            result_detect = []
 
-            # frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
+            for i in range(5):
+                self.success, frame = self.cap.read()
+                frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
+        
+                #pprint(dir(model(frame)[0]))
+                result = self.model(frame,max_det=1)[0]
+                detections=sv.Detections.from_yolov8(result)
+                self.labels = [
+                    f"{self.model.model.names[class_id]} {confidence:0.2f}"
+                    for _, confidence, class_id, _
+                    in detections
+                    ]
+                
+                box_annotator = sv.BoxAnnotator(
+                    thickness=2,                                                                      
+                    text_thickness=2,
+                    text_scale=1
+                )
 
-            extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
-            var_data = extract
-            print(var_data)
-            self.resutlt.setText(f"RESULT: {var_data}")
+                frame = box_annotator.annotate(scene=frame, detections=detections, labels = self.labels)
+                print(f"FRAME: {frame})")
+                print(f"self.labels: {self.labels})")
+                extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
+                var_data = extract
+                
+                result_detect.append(var_data)
 
-            if(var_data == "OTHERS"):
-                var_data = "OTHER"
+                time.sleep(1)
 
-            self.sendToArduino(var_data)
+            print(f"result_detect: {result_detect}")
+            # self.resutlt.setText(f"RESULT: {var_data}")
 
-            conn = sqlite3.connect('bintech.db')
-            cursor = conn.cursor()
+            # self.sendToArduino(var_data)
 
-            cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
-                    id INTEGER PRIMARY KEY,
-                    user_id INTEGER,
-                    plastic_type TEXT NOT NULL,
-                    date_created datetime default current_timestamp,
-                    FOREIGN KEY (user_id) 
-                        REFERENCES users (id) 
-                            ON DELETE CASCADE 
-                            ON UPDATE NO ACTION                    
-                 )''')
+            # conn = sqlite3.connect('bintech.db')
+            # cursor = conn.cursor()
+
+            # cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
+            #         id INTEGER PRIMARY KEY,
+            #         user_id INTEGER,
+            #         plastic_type TEXT NOT NULL,
+            #         date_created datetime default current_timestamp,
+            #         FOREIGN KEY (user_id) 
+            #             REFERENCES users (id) 
+            #                 ON DELETE CASCADE 
+            #                 ON UPDATE NO ACTION                    
+            #      )''')
             
-            cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
-            user = cursor.fetchone()
-            # print(user)
-            id = user[0]
+            # cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
+            # user = cursor.fetchone()
+            # # print(user)
+            # id = user[0]
 
-            cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, var_data))
-            conn.commit()
+            # cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, var_data))
+            # conn.commit()
 
-            # Close cursor and connection
-            cursor.close()
-            conn.close()
+            # # Close cursor and connection
+            # cursor.close()
+            # conn.close()
             
             timeLoading = 20
 
