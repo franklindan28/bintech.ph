@@ -84,7 +84,7 @@ class Loading_Process(QMainWindow):
         if self.labels:
             result_detect = []
 
-            for i in range(5):
+            for i in range(10):
                 self.success, frame = self.cap.read()
                 frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
         
@@ -111,40 +111,44 @@ class Loading_Process(QMainWindow):
                 
                 result_detect.append(var_data)
 
-                time.sleep(1)
+                time.sleep(0.5)
 
             print(f"result_detect: {result_detect}")
+            print(f"result_detect: {self.find_most_frequent_max_string(result_detect)}")
+
+            result_data = self.find_most_frequent_max_string(result_detect)
+
             # CLOSE THE DOOR
             self.sendToArduino("CLOSE")
-            # self.resutlt.setText(f"RESULT: {var_data}")
+            self.resutlt.setText(f"RESULT: {result_data}")
 
-            # self.sendToArduino(var_data)
+            self.sendToArduino(result_data)
 
-            # conn = sqlite3.connect('bintech.db')
-            # cursor = conn.cursor()
+            conn = sqlite3.connect('bintech.db')
+            cursor = conn.cursor()
 
-            # cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
-            #         id INTEGER PRIMARY KEY,
-            #         user_id INTEGER,
-            #         plastic_type TEXT NOT NULL,
-            #         date_created datetime default current_timestamp,
-            #         FOREIGN KEY (user_id) 
-            #             REFERENCES users (id) 
-            #                 ON DELETE CASCADE 
-            #                 ON UPDATE NO ACTION                    
-            #      )''')
+            cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
+                    id INTEGER PRIMARY KEY,
+                    user_id INTEGER,
+                    plastic_type TEXT NOT NULL,
+                    date_created datetime default current_timestamp,
+                    FOREIGN KEY (user_id) 
+                        REFERENCES users (id) 
+                            ON DELETE CASCADE 
+                            ON UPDATE NO ACTION                    
+                 )''')
             
-            # cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
-            # user = cursor.fetchone()
-            # # print(user)
-            # id = user[0]
+            cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
+            user = cursor.fetchone()
+            # print(user)
+            id = user[0]
 
-            # cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, var_data))
-            # conn.commit()
+            cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, result_data))
+            conn.commit()
 
-            # # Close cursor and connection
-            # cursor.close()
-            # conn.close()
+            # Close cursor and connection
+            cursor.close()
+            conn.close()
             
             timeLoading = 20
 
@@ -224,6 +228,33 @@ class Loading_Process(QMainWindow):
         except KeyboardInterrupt:
             print("Terminated! Restart the System!")
             self.ser.close()
+
+    def find_most_frequent_max_string(arr):
+        if not arr:
+            return None
+
+        # Step 1: Count each string in the array using a dictionary
+        count = {}
+        for string in arr:
+            if string in count:
+                count[string] += 1
+            else:
+                count[string] = 1
+
+        # Step 2: Determine the highest frequency
+        max_count = 0
+        most_frequent_strings = []
+        for string, freq in count.items():
+            if freq > max_count:
+                max_count = freq
+                most_frequent_strings = [string]
+            elif freq == max_count:
+                most_frequent_strings.append(string)
+
+        # Step 3: Get the highest (alphabetically) string among those with the highest frequency
+        most_frequent_max_string = max(most_frequent_strings)
+
+        return most_frequent_max_string
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
