@@ -84,7 +84,7 @@ class Loading_Process(QMainWindow):
         if self.labels:
             result_detect = []
 
-            for i in range(10):
+            while(len(result_detect) != 10):
                 self.success, frame = self.cap.read()
                 frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
         
@@ -103,20 +103,25 @@ class Loading_Process(QMainWindow):
                     text_scale=1
                 )
 
-                frame = box_annotator.annotate(scene=frame, detections=detections, labels = self.labels)
-                print(f"FRAME: {frame})")
-                print(f"self.labels: {self.labels})")
-                extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
-                var_data = extract
-                
-                result_detect.append(var_data)
+                if self.labels:
+                    frame = box_annotator.annotate(scene=frame, detections=detections, labels = self.labels)
+                    print(f"FRAME: {frame})")
+                    print(f"self.labels: {self.labels})")
+                    extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
+                    var_data = extract
+                    
+                    result_detect.append(var_data)
 
-                time.sleep(0.5)
+                else:
+                    print("No detections")
+
+                time.sleep(1)
 
             print(f"result_detect: {result_detect}")
             # print(f"result_detect: {self.find_most_frequent_max_string(result_detect)}")
 
             result_data = self.find_most_frequent_max_string(result_detect)
+            print(f"final_result_detect: {result_detect}")
 
             # CLOSE THE DOOR
             self.sendToArduino("CLOSE")
