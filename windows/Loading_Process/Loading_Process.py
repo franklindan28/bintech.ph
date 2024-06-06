@@ -38,6 +38,9 @@ class Loading_Process(QMainWindow):
 
         layout = QHBoxLayout()
 
+        # OPEN THE DOOR
+        self.sendToArduino("OPEN")
+
         self.resutlt = QLabel(self)
         self.resutlt.setText(f"RESULT: ...")  # Display user's email
         self.resutlt.move(700, 200)
@@ -111,6 +114,8 @@ class Loading_Process(QMainWindow):
                 time.sleep(1)
 
             print(f"result_detect: {result_detect}")
+            # CLOSE THE DOOR
+            self.sendToArduino("CLOSE")
             # self.resutlt.setText(f"RESULT: {var_data}")
 
             # self.sendToArduino(var_data)
