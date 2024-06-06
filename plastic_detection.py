@@ -46,13 +46,18 @@ def main():
         success, img = cap.read()
         print(success)
         if success:
-            while True:                                                                                             
+
+            result_detect = []
+
+            while(len(result_detect) != 10):                                                                                             
                 success, frame = cap.read()
                 frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
         
                 #pprint(dir(model(frame)[0]))
                 result = model(frame,max_det=1)[0]
+
                 detections=sv.Detections.from_yolov8(result)
+
                 labels = [
                     f"{model.model.names[class_id]} {confidence:0.2f}"
                     for _, confidence, class_id, _
@@ -60,11 +65,12 @@ def main():
                     ]
 
                 frame = box_annotator.annotate(scene=frame, detections=detections, labels = labels)
-                # cv2.imshow("plastic detection", frame)
+                cv2.imshow("plastic detection", frame)
                 if labels:
                     time.sleep(0.5)
                     extract = " ".join(re.findall("[a-zA-Z]+", str(labels[0])))
                     var_data = extract
+                    result_detect.append(var_data)
                     #print(var_data)
                     print(get_data())
                     
@@ -72,6 +78,10 @@ def main():
                     print("No detections")
                 if (cv2.waitKey(30) == 27):
                     break	
+            
+            print(f"Result: {result_detect}")
+            final_res = find_most_frequent_max_string(result_detect)
+            print(f"Final Result: {final_res}")
         else:
             print("cannot capture frames")
         
@@ -85,6 +95,32 @@ def get_data():
     my_data = var_data
     return my_data
 
+def find_most_frequent_max_string(arr):
+        if not arr:
+            return None
+
+        # Step 1: Count each string in the array using a dictionary
+        count = {}
+        for string in arr:
+            if string in count:
+                count[string] += 1
+            else:
+                count[string] = 1
+
+        # Step 2: Determine the highest frequency
+        max_count = 0
+        most_frequent_strings = []
+        for string, freq in count.items():
+            if freq > max_count:
+                max_count = freq
+                most_frequent_strings = [string]
+            elif freq == max_count:
+                most_frequent_strings.append(string)
+
+        # Step 3: Get the highest (alphabetically) string among those with the highest frequency
+        most_frequent_max_string = max(most_frequent_strings)
+
+        return most_frequent_max_string
 
 if __name__ == "__main__":
     main()
