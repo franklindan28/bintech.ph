@@ -1,23 +1,15 @@
 #include <Servo.h>
-#include <SPI.h>
 
-#include <MFRC522.h>
 long duration, distance, PET_Bin_Sensor, HDPE_Bin_Sensor, PP_Bin_Sensor, Right_Bin_Sensor2,Middle_Bin_Sensor2;
-
-#define RST_PIN         5          // Configurable, see typical pin layout above
-#define SS_PIN          53         // Configurable, see typical pin layout above
-
-MFRC522 mfrc522(SS_PIN, RST_PIN);
-#define trigPin1 6
-#define echoPin1  7
-#define capacitive 41
 
 const int ledPins[] = {23,25,27,29}; // LED Pin for plastic type
 const int numLeds = 4;
 
 #define rfid_red_led 31 //rfid grant
 #define rfid_green_led 33 // rfid denied 
-bool account_bool = false;
+#define trigPin1 6
+#define echoPin1  7
+
 int servoPin1 = 39;// flipper
 int servoPin2 = 37;// bin
 int servoPin3 = 35; //door 
@@ -28,25 +20,20 @@ Servo Servo3;
 int defaultDeg = 90; // PP
 
 void setup() {
+    Serial.begin(115200);
+    Serial.println("Initializing ....");
     Servo1.attach(servoPin1);
     Servo1.write(178);
-    delay(2000);
+    delay(15);
     Servo1.detach();
-    
-    SPI.begin(); 
-    /* Initialise the RFID reader */
-    mfrc522.PCD_Init();
-    Serial.println("Initializing ....");
-    delay(1000);
-    pinMode(trigPin1, OUTPUT);
-    pinMode(echoPin1, INPUT);
-    pinMode(capacitive, INPUT);
+
     Serial.println("Start Now ....");
     Serial.println("Enter Plastic Type: ");
     
     
     Servo2.attach(servoPin2);
     Servo2.write(defaultDeg);
+    delay(2000);
     Servo2.detach();
 
     Servo3.attach(servoPin3);
@@ -67,9 +54,6 @@ void setup() {
 
     digitalWrite(rfid_red_led, LOW);
     digitalWrite(rfid_green_led, LOW);
-
-
-    Serial.begin(115200);
 
     //Servo2.write(90);
 }
@@ -145,9 +129,9 @@ void loop() {
 
       PProtate(2100);
     }
-    else if (plastic_input.equals("OTHER"))
+    else if (plastic_input.equals("OTHERS"))
     {
-      Serial.println("OTHER.");
+      Serial.println("OTHERS.");
      
       digitalWrite(ledPins[3], HIGH);
       delay(2000);
@@ -157,10 +141,18 @@ void loop() {
 
       rotate(1050);
     } else if (plastic_input.equals("OPEN")){
+      Serial.println("OPEN DOOR.");
       Servo3.attach(servoPin3);
       Servo3.write(120); // Open
       delay(2000);
-      Servo3.detach()
+      Servo3.detach();
+      
+    } else if (plastic_input.equals("CLOSE")){
+      Serial.println("CLOSE DOOR.");
+      Servo3.attach(servoPin3);
+      Servo3.write(0); // Open
+      delay(2000);
+      Servo3.detach();
     }
   }
 }
@@ -253,15 +245,17 @@ void PProtate(int delaySec){
 
 void flip(){
     delay(1000);
+    Serial.println("OPEN FLIPPER.");
     Servo1.attach(servoPin1);
     Servo1.write(78);
     delay(2000);
 
     Servo1.detach();
-    delay(7000);
+    delay(2000);
 
+    Serial.println("CLOSE FLIPPER.");
     Servo1.attach(servoPin1);
     Servo1.write(178);
-    delay(7000);
+    delay(2000);
     Servo1.detach();
 }
