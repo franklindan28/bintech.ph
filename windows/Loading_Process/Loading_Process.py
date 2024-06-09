@@ -234,7 +234,7 @@ class Loading_Process(QMainWindow):
             print("Terminated! Restart the System!")
             self.ser.close()
 
-    def find_most_frequent_max_string(arr):
+    def find_most_frequent_max_string(self, arr):
         if not arr:
             return None
 
