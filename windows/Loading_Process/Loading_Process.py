@@ -84,7 +84,7 @@ class Loading_Process(QMainWindow):
         if self.labels:
             result_detect = []
 
-            while(len(result_detect) != 10):
+            while(len(result_detect) <= 10):
                 self.success, frame = self.cap.read()
                 frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
         
