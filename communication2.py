@@ -19,31 +19,23 @@ def main():
     for port in serial_ports:
         ser = establish_serial_connection(port)
         if ser:
+            print("OPEN")
+            ser.write("OPEN".encode())
+            ser.flush()
+            time.sleep(3)
+            print("CLOSE")
+            ser.write("CLOSE".encode())
+            ser.flush()
+            time.sleep(1)
+            print("PP")
+            ser.write("PP".encode())
+            ser.flush()
+            time.sleep(0.1)
+
             break
     if not ser:
         print("Failed to establish connection!")
         return
-
-    try:
-        # while True:
-        #     user_input = input("Enter Command (start): ").upper()
-        #     print("heheheeh: ", user_input.encode())
-        #     ser.write(user_input.encode())
-        #     print(f'Sent command: {user_input}')
-        print("OPEN")
-        ser.write("OPEN".encode())
-        time.sleep(3)
-        print("OPEN")
-        ser.write("CLOSE".encode())
-        time.sleep(1)
-        print("PP")
-        ser.write("PP".encode())
-
-            
-            
-    except KeyboardInterrupt:
-       print("Terminated! Restart the System!")
-       ser.close()
        
        
 
