@@ -26,11 +26,18 @@ def main():
         return
 
     try:
-        while True:
-            user_input = input("Enter Command (start): ").upper()
-            print("heheheeh: ", user_input.encode())
-            ser.write(user_input.encode())
-            print(f'Sent command: {user_input}')
+        # while True:
+        #     user_input = input("Enter Command (start): ").upper()
+        #     print("heheheeh: ", user_input.encode())
+        #     ser.write(user_input.encode())
+        #     print(f'Sent command: {user_input}')
+
+        ser.write("OPEN".encode())
+        time.sleep(3)
+        ser.write("CLOSE".encode())
+        time.sleep(1)
+        ser.write("PP".encode())
+
             
             
     except KeyboardInterrupt:
