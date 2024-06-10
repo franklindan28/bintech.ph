@@ -124,10 +124,24 @@ class Loading_Process(QMainWindow):
             print(f"final_result_detect: {result_detect}")
 
             # CLOSE THE DOOR
-            self.sendToArduino("CLOSE")
+            message = "CLOSE".upper()
+            print("message_upper: ")
+            print(message)
+            self.ser.write(message.encode())
+            print("message.encode(): ")
+            print(message.encode())
+            # self.sendToArduino("CLOSE")
             self.resutlt.setText(f"RESULT: {result_data}")
 
-            self.sendToArduino(result_data)
+            message = result_data.upper()
+            print("message_upper: ")
+            print(message)
+
+            self.ser.write(message.encode())
+            print("message.encode(): ")
+            print(message.encode())
+
+            # self.sendToArduino(result_data)
 
             conn = sqlite3.connect('bintech.db')
             cursor = conn.cursor()
