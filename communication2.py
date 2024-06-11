@@ -11,7 +11,7 @@ def establish_serial_connection(port):
         return None
 
 
-def main():
+def main(command):
     serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
 
     # serial_ports = ['COM1','COM2', 'COM3', 'COM4']
@@ -19,16 +19,14 @@ def main():
     for port in serial_ports:
         ser = establish_serial_connection(port)
         if ser:
-            while True:
-                command = input("Enter command: ")
-                ser.write(command.encode())
-
+            ser.write(command.encode())
+            ser.close()
             break
+
     if not ser:
         print("Failed to establish connection!")
-        return
-       
-       
+        return   
 
-if __name__ == "__main__":
-    main()
+while True:
+    command = input("Enter command: ")
+    main(command)
