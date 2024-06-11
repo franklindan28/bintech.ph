@@ -19,18 +19,9 @@ def main():
     for port in serial_ports:
         ser = establish_serial_connection(port)
         if ser:
-            print("OPEN")
-            ser.write("OPEN".encode())
-            ser.flush()
-            time.sleep(3)
-            print("CLOSE")
-            ser.write("CLOSE".encode())
-            ser.flush()
-            time.sleep(1)
-            print("PP")
-            ser.write("PP".encode())
-            ser.flush()
-            time.sleep(0.1)
+            while True:
+                command = input("Enter command: ")
+                ser.write(command.encode())
 
             break
     if not ser:
