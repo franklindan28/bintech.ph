@@ -146,7 +146,7 @@ class Register(QMainWindow):
                 self.rfid.clear()
                 return
             
-            cursor.execute("INSERT INTO users (email, username, password, rfid) VALUES (?,?,?,?)", (user_email, user_name, user_password, user_rfid))
+            cursor.execute("INSERT INTO users (email, username, password, rfid, points) VALUES (?,?,?,?)", (user_email, user_name, user_password, user_rfid, 0.0))
             conn.commit()
 
             # Close cursor and connection
