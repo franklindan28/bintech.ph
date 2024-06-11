@@ -236,15 +236,14 @@ class Loading_Process(QMainWindow):
 
     def sendToArduino(self, detectionResult):
         try:
-            self.ser.close()
-            self.ser.open()
             # while True:
             #     user_input = input("Enter Command (start): ").upper()
             #     ser.write(user_input.encode())
             #     print(f'Sent command: {user_input}')
             detectionResult = detectionResult.upper()
             self.ser.write(detectionResult.encode())
-            time.sleep(3)  #at least wait for 2s
+            self.ser.flush()
+            time.sleep(2)  #at least wait for 2s
             print(f'Sent command: {detectionResult}')
             
         except KeyboardInterrupt:
