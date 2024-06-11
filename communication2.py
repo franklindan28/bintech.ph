@@ -23,23 +23,17 @@ def init_serial():
     for port in serial_ports:
         ser = establish_serial_connection(port)
         if ser:
-            ser.open()
+            command = "OPEN"
+            command = command.upper()
+            ser.write(command.encode())
+            print(f'Sent command: {command}')
             break
 
     if not ser:
         print("Failed to establish connection!")
         return
-
-def main(command):
-    global ser
-    ser.close()
-    ser.open()
-    command = command.upper()
-    ser.write(command.encode())
-    time.sleep(5)
-    print(f'Sent command: {command}')
        
 init_serial()
-while True:
-    command = input("Enter command: ")
-    main(command)
+# while True:
+#     command = input("Enter command: ")
+#     main(command)
