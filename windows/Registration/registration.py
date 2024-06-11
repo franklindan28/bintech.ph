@@ -129,7 +129,8 @@ class Register(QMainWindow):
                     email TEXT UNIQUE,
                     username TEXT NOT NULL,
                     password INTEGER,
-                    rfid TEXT UNIQUE
+                    rfid TEXT UNIQUE,
+                    points FLOAT
                  )''')
 
             # Execute query to insert user data into the database
