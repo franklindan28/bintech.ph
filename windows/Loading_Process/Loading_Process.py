@@ -40,6 +40,7 @@ class Loading_Process(QMainWindow):
 
         # OPEN THE DOOR
         self.sendToArduino("OPEN")
+        time.sleep(2)
 
         self.resutlt = QLabel(self)
         self.resutlt.setText(f"RESULT: ...")  # Display user's email
@@ -124,24 +125,15 @@ class Loading_Process(QMainWindow):
             print(f"final_result_detect: {result_detect}")
 
             # CLOSE THE DOOR
-            message = "CLOSE".upper()
-            print("message_upper: ")
-            print(message)
-            self.ser.write(message.encode())
-            print("message.encode(): ")
-            print(message.encode())
-            # self.sendToArduino("CLOSE")
+            self.sendToArduino("CLOSE")
+            time.sleep(2)
             self.resutlt.setText(f"RESULT: {result_data}")
 
             message = result_data.upper()
             print("message_upper: ")
             print(message)
 
-            self.ser.write(message.encode())
-            print("message.encode(): ")
-            print(message.encode())
-
-            # self.sendToArduino(result_data)
+            self.sendToArduino(result_data)
 
             conn = sqlite3.connect('bintech.db')
             cursor = conn.cursor()
@@ -234,17 +226,18 @@ class Loading_Process(QMainWindow):
         except sqlite3.Error as e:
             QMessageBox.critical(self, 'Error', f'Failed to connect to database. Error: {str(e)}')
 
-    def sendToArduino(self, detectionResult):
+    def sendToArduino(self, command):
         try:
             # while True:
             #     user_input = input("Enter Command (start): ").upper()
             #     ser.write(user_input.encode())
             #     print(f'Sent command: {user_input}')
-            detectionResult = detectionResult.upper()
-            self.ser.write(detectionResult.encode())
+            command = command.upper()
+            self.ser.write(command.encode())
             self.ser.flush()
-            time.sleep(2)  #at least wait for 2s
-            print(f'Sent command: {detectionResult}')
+            time.sleep(0.1)  #at least wait for 2s
+
+            print(f'Sent command: {command}')
             
         except KeyboardInterrupt:
             print("Terminated! Restart the System!")
