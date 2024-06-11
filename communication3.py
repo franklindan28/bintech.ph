@@ -15,8 +15,8 @@ def send_command(user_input):
 
 time.sleep(10)
 send_command("OPEN")
-time.sleep(10)
+time.sleep(3)
 send_command("CLOSE")
-time.sleep(10)
+time.sleep(3)
 send_command("PET")
 
