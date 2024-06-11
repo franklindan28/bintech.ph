@@ -136,15 +136,23 @@ class Loading_Process(QMainWindow):
             self.sendToArduino(result_data)
 
             points = 0
+            balance = 0
 
             if (result_data == "HDPE"):
                 points = 5
+                balance = 1.5
+
             elif(result_data == "PP"):
                 points = 2
+                balance = 0.5
+
             elif(result_data == "PET"):
                 points = 3
+                balance = 1
+
             else:
                 points = 1
+                balance = 0.25
 
             conn = sqlite3.connect('bintech.db')
             cursor = conn.cursor()
@@ -166,8 +174,9 @@ class Loading_Process(QMainWindow):
             id = user[0]
 
             total_points = user[5] + points
+            total_balance = user[6] + balance
 
-            cursor.execute("UPDATE users SET points = ? WHERE username = ?", (total_points, self.user_name))
+            cursor.execute("UPDATE users SET points = ?, balance = ? WHERE username = ?", (total_points, total_balance, self.user_name))
             conn.commit()
 
             cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, result_data))

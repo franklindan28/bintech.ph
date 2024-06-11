@@ -130,7 +130,8 @@ class Register(QMainWindow):
                     username TEXT NOT NULL,
                     password INTEGER,
                     rfid TEXT UNIQUE,
-                    points FLOAT
+                    points FLOAT,
+                    balance FLOAT
                  )''')
 
             # Execute query to insert user data into the database
@@ -146,7 +147,7 @@ class Register(QMainWindow):
                 self.rfid.clear()
                 return
             
-            cursor.execute("INSERT INTO users (email, username, password, rfid, points) VALUES (?,?,?,?,?)", (user_email, user_name, user_password, user_rfid, 0.0))
+            cursor.execute("INSERT INTO users (email, username, password, rfid, points, balance) VALUES (?,?,?,?,?,?)", (user_email, user_name, user_password, user_rfid, 0.0, 0.0))
             conn.commit()
 
             # Close cursor and connection
