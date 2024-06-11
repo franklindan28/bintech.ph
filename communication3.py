@@ -13,10 +13,10 @@ def send_command(user_input):
     time.sleep(0.1)
     print(f'Sent command: {user_input}')
 
-time.sleep(5)
+time.sleep(10)
 send_command("OPEN")
-time.sleep(5)
+time.sleep(10)
 send_command("CLOSE")
-time.sleep(5)
+time.sleep(10)
 send_command("PET")
 
