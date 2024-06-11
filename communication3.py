@@ -3,9 +3,18 @@ import serial
 
 ser = serial.Serial('/dev/ttyACM0', baudrate = 115200, timeout=1)
 
-if ser.is_open:
-    user_input = "OPEN".upper()
-    ser.write(user_input.encode())
-    print(f'Sent command: {user_input}')
-    time.sleep(3)
+#while True:
+user_input = input("Enter Command: ").upper()
+print("user_input_encode: ", user_input.encode())
+ser.write(user_input.encode())
+ser.flush()
+time.sleep(0.1)
+print(f'Sent command: {user_input}')
+
+user_input = input("Enter Command: ").upper()
+print("user_input_encode: ", user_input.encode())
+ser.write(user_input.encode())
+ser.flush()
+time.sleep(0.1)
+print(f'Sent command: {user_input}')
 
