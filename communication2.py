@@ -1,11 +1,8 @@
 import serial
 import time
 
-global ser
-
 def establish_serial_connection(port):
     try:
-        global ser
         ser = serial.Serial(port, baudrate = 115200, timeout=1)
         print(f"Serial Connection established on {port}")
         return ser
@@ -14,26 +11,34 @@ def establish_serial_connection(port):
         return None
 
 
-def init_serial():
-    global ser
-    serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
+def main():
+    # serial_ports = ['/dev/ttyACM0','/dev/ttyUSB0','/dev/ttyUSB1','/dev/ttyUSB2','/dev/ttyUSB3','/dev/ttyS0','/dev/ttyTHS1','/dev/ttyTHS2']
 
-    # serial_ports = ['COM1','COM2', 'COM3', 'COM4']
+    serial_ports = ['COM1','COM2', 'COM3', 'COM4']
+
 
     for port in serial_ports:
         ser = establish_serial_connection(port)
         if ser:
-            command = "OPEN"
-            command = command.upper()
-            ser.write(command.encode())
-            print(f'Sent command: {command}')
             break
-
     if not ser:
         print("Failed to establish connection!")
         return
+
+    try:
+        while True:
+            user_input = input("Enter Command (start): ").upper()
+            print("user_input: ", user_input)
+            print("user_input_encode: ", user_input.encode())
+            ser.write(user_input.encode())
+            print(f'Sent command: {user_input}')
+            
+            
+    except KeyboardInterrupt:
+       print("Terminated! Restart the System!")
+       ser.close()
        
-init_serial()
-# while True:
-#     command = input("Enter command: ")
-#     main(command)
+       
+
+if __name__ == "__main__":
+    main()
