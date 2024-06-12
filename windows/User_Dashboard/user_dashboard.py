@@ -160,7 +160,7 @@ class User_Dashboard_Window(QMainWindow):
 
             self.points = int(user[5])
 
-            self.balance = float(user[5])
+            self.balance = float(user[6])
             self.balance = "{:.2f}".format(self.balance)
 
             # Execute query to verify user credentials
