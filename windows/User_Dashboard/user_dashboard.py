@@ -157,8 +157,11 @@ class User_Dashboard_Window(QMainWindow):
             id = user[0]
             print("points: ", user[5])
             print("balance: ", user[6])
-            self.points = float(user[5])
-            self.balance = float(user[6])
+
+            self.points = int(user[5])
+
+            self.balance = float(user[5])
+            self.balance = "{:.2f}".format(self.balance)
 
             # Execute query to verify user credentials
             cursor.execute("SELECT * FROM plastics WHERE user_id = ?", (id,))
