@@ -109,7 +109,7 @@ class User_Dashboard_Window(QMainWindow):
         self.TotalBalance = QLabel(self)
         self.TotalBalance.setText("Total Balance: PHP " + str(self.balance))
         self.TotalBalance.move(300,600 + 75 + 75)
-        self.TotalBalance.resize(500,50)
+        self.TotalBalance.resize(550,50)
         self.TotalBalance.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def username_retrieve(self, email):
