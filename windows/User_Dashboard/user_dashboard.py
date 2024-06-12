@@ -63,7 +63,7 @@ class User_Dashboard_Window(QMainWindow):
         
     def back_btn(self):
         back_button = QPushButton("BACK", self)
-        back_button.setGeometry(300, 770, 600, 100)
+        back_button.setGeometry(300, 820, 600, 100)
         back_button.setStyleSheet("QPushButton { font-size: 40px; background-color: #699913; font-family: Roboto;font-weight: 900; font-style: normal; color: white;  border-radius: 20px; }" "QPushButton:pressed { background-color: #0E7470; color: #FFFFFF;  }" )
         back_button.clicked.connect(self.clicked_Back)  # Connect to clicked_Back without passing any arguments
 
@@ -155,8 +155,10 @@ class User_Dashboard_Window(QMainWindow):
             user = cursor.fetchone()
             # print(user)
             id = user[0]
-            self.points = user[5]
-            self.balance = user[6]
+            print("points: ", user[5])
+            print("balance: ", user[6])
+            self.points = int(user[5])
+            self.balance = int(user[6])
 
             # Execute query to verify user credentials
             cursor.execute("SELECT * FROM plastics WHERE user_id = ?", (id,))
