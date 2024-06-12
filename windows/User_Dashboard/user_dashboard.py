@@ -102,14 +102,14 @@ class User_Dashboard_Window(QMainWindow):
         self.TotalPoints = QLabel(self)
         self.TotalPoints.setText("Total Points: " + str(self.points))
         self.TotalPoints.move(300,600 + 75)
-        self.TotalPoints.resize(300,50)
+        self.TotalPoints.resize(400,50)
         self.TotalPoints.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def Total_Balance(self):
         self.TotalBalance = QLabel(self)
         self.TotalBalance.setText("Total Balance: " + str(self.balance))
         self.TotalBalance.move(300,600 + 75 + 75)
-        self.TotalBalance.resize(300,50)
+        self.TotalBalance.resize(400,50)
         self.TotalBalance.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def username_retrieve(self, email):
@@ -157,8 +157,8 @@ class User_Dashboard_Window(QMainWindow):
             id = user[0]
             print("points: ", user[5])
             print("balance: ", user[6])
-            self.points = int(user[5])
-            self.balance = int(user[6])
+            self.points = float(user[5])
+            self.balance = float(user[6])
 
             # Execute query to verify user credentials
             cursor.execute("SELECT * FROM plastics WHERE user_id = ?", (id,))
