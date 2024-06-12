@@ -257,7 +257,7 @@ void PProtate(int delaySec){
 }
 
 void flip(){
-//    delay(1000);
+    delay(1000);
 //    180
     Serial.println("OPEN FLIPPER.");
 //    Servo1.attach(servoPin1);
