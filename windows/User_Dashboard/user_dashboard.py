@@ -39,25 +39,31 @@ class User_Dashboard_Window(QMainWindow):
         self.pet = 0
         self.pp = 0
         self.other = 0
+        self.points = 0
+        self.balance = 0
         self.getData()
 
         self.PET_Plastic_Type = QLabel(self)
         self.HDPE_Plastic_Type = QLabel(self)
         self.PP_Plastic_Type = QLabel(self)
         self.OTHER_Plastic_Type = QLabel(self)
+        self.TotalPoints = QLabel(self)
+        self.TotalBalance = QLabel(self)
 
         self.plastic_type()
         self.PET_plastic_type()
         self.HDPE_plastic_type()
         self.PP_plastic_type()
         self.OTHER_plastic_type()
+        self.Total_Points()
+        self.Total_Balance()
         self.back_btn()
 
         self.showFullScreen()
         
     def back_btn(self):
         back_button = QPushButton("BACK", self)
-        back_button.setGeometry(300, 720, 600, 100)
+        back_button.setGeometry(300, 770, 600, 100)
         back_button.setStyleSheet("QPushButton { font-size: 40px; background-color: #699913; font-family: Roboto;font-weight: 900; font-style: normal; color: white;  border-radius: 20px; }" "QPushButton:pressed { background-color: #0E7470; color: #FFFFFF;  }" )
         back_button.clicked.connect(self.clicked_Back)  # Connect to clicked_Back without passing any arguments
 
@@ -69,7 +75,7 @@ class User_Dashboard_Window(QMainWindow):
         Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def PET_plastic_type(self):
-        self.PET_Plastic_Type.setText("PET " + str(self.pet))
+        self.PET_Plastic_Type.setText("PET: " + str(self.pet))
         self.PET_Plastic_Type.move(300,375)
         self.PET_Plastic_Type.resize(300,50)
         self.PET_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
@@ -91,6 +97,20 @@ class User_Dashboard_Window(QMainWindow):
         self.OTHER_Plastic_Type.move(300,600)
         self.OTHER_Plastic_Type.resize(300,50)
         self.OTHER_Plastic_Type.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 900; font-style: normal; color:  #699913; }" )
+
+    def Total_Points(self):
+        self.TotalPoints = QLabel(self)
+        self.TotalPoints.setText("Total Points: " + str(self.points))
+        self.TotalPoints.move(300,600 + 75)
+        self.TotalPoints.resize(300,50)
+        self.TotalPoints.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
+
+    def Total_Balance(self):
+        self.TotalBalance = QLabel(self)
+        self.TotalBalance.setText("Total Balance: " + str(self.balance))
+        self.TotalBalance.move(300,600 + 75 + 75)
+        self.TotalBalance.resize(300,50)
+        self.TotalBalance.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def username_retrieve(self, email):
         try:
@@ -135,6 +155,8 @@ class User_Dashboard_Window(QMainWindow):
             user = cursor.fetchone()
             # print(user)
             id = user[0]
+            self.points = user[5]
+            self.balance = user[6]
 
             # Execute query to verify user credentials
             cursor.execute("SELECT * FROM plastics WHERE user_id = ?", (id,))
