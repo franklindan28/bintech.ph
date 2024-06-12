@@ -102,14 +102,14 @@ class User_Dashboard_Window(QMainWindow):
         self.TotalPoints = QLabel(self)
         self.TotalPoints.setText("Total Points: " + str(self.points))
         self.TotalPoints.move(300,600 + 75)
-        self.TotalPoints.resize(400,50)
+        self.TotalPoints.resize(500,50)
         self.TotalPoints.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def Total_Balance(self):
         self.TotalBalance = QLabel(self)
         self.TotalBalance.setText("Total Balance: " + str(self.balance))
         self.TotalBalance.move(300,600 + 75 + 75)
-        self.TotalBalance.resize(400,50)
+        self.TotalBalance.resize(500,50)
         self.TotalBalance.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def username_retrieve(self, email):
