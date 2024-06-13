@@ -10,21 +10,32 @@ const int numLeds = 4;
 #define trigPin1 6
 #define echoPin1  7
 
-int servoPin1 = 39;// flipper
-int servoPin2 = 37;// bin
-int servoPin3 = 35; //door 
+int servoPin1 = 31; // flipper
+int servoPin2 = 37; // bin
+int servoPin3 = 39; //door 
 Servo Servo1;
 Servo Servo2;
 Servo Servo3;
 
 int defaultDeg = 90; // PP
 
+int default_flip_deg = 178;
+int open_flip_deg = 100;
+
 void setup() {
     Serial.begin(115200);
     Serial.println("Initializing ....");
-    Servo1.attach(servoPin1);
-    Servo1.write(178);
-    delay(15);
+    
+//    180
+//    Servo1.attach(servoPin1);
+//    Servo1.write(178);
+//    delay(1000);
+//    Servo1.detach();
+
+    Serial.println("FLIPPER DEFAULT CLOSE");
+    Servo1.attach(servoPin1);  // attaches the servo on pin 9 to the servo object
+    Servo1.write(default_flip_deg);
+    delay(2000);
     Servo1.detach();
 
     Serial.println("Start Now ....");
@@ -141,6 +152,7 @@ void loop() {
 
       rotate(1050);
     } else if (plastic_input.equals("OPEN")){
+//      180
       Serial.println("OPEN DOOR.");
       Servo3.attach(servoPin3);
       Servo3.write(120); // Open
@@ -148,6 +160,7 @@ void loop() {
       Servo3.detach();
       
     } else if (plastic_input.equals("CLOSE")){
+//      180
       Serial.println("CLOSE DOOR.");
       Servo3.attach(servoPin3);
       Servo3.write(0); // Open
@@ -245,17 +258,43 @@ void PProtate(int delaySec){
 
 void flip(){
     delay(1000);
+//    180
     Serial.println("OPEN FLIPPER.");
+//    Servo1.attach(servoPin1);
+//    Servo1.write(78);
+//    delay(2000);
     Servo1.attach(servoPin1);
-    Servo1.write(78);
-    delay(2000);
-
+    for (int pos = default_flip_deg; pos >= open_flip_deg; pos -= 1) { // goes from 180 degrees to 0 degrees
+      Servo1.write(pos);              // tell servo to go to position in variable 'pos'
+      delay(20);                       // waits 15ms for the servo to reach the position
+    }
     Servo1.detach();
+
     delay(2000);
 
     Serial.println("CLOSE FLIPPER.");
+//    Servo1.attach(servoPin1);
+//    Servo1.write(178);
+//    delay(2000);
+//    Servo1.detach();
     Servo1.attach(servoPin1);
-    Servo1.write(178);
-    delay(2000);
+    for (int pos = open_flip_deg; pos <= default_flip_deg; pos += 1) { // goes from 180 degrees to 0 degrees
+      Servo1.write(pos);              // tell servo to go to position in variable 'pos'
+      delay(20);                       // waits 15ms for the servo to reach the position
+    }
     Servo1.detach();
+
+//  360
+//    Serial.println("OPEN FLIPPER.");
+//    Servo1.write(0);
+//    delay(350);
+//     
+//    Servo1.write(90);
+//    delay(2000);
+//
+//    Serial.println("CLOSE FLIPPER.");
+//    Servo1.write(360);
+//    delay(350);
+//
+//    Servo1.write(90);
 }
