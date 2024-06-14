@@ -126,7 +126,7 @@ void loop() {
       digitalWrite(ledPins[1], LOW);  
       delay(1000);
 
-      rotateCounter(1100);
+      rotateCounter(1400);
     }
     else if (plastic_input.equals("PP"))
     {
@@ -138,7 +138,7 @@ void loop() {
       delay(2000);
 
 
-      PProtate(2100);
+      PProtate(2550);
     }
     else if (plastic_input.equals("OTHERS"))
     {
@@ -150,7 +150,7 @@ void loop() {
       delay(2000);
 
 
-      rotate(1050);
+      rotate(1600);
     } else if (plastic_input.equals("OPEN")){
 //      180
       Serial.println("OPEN DOOR.");
@@ -212,7 +212,7 @@ void rotate(int delaySec){
     Servo2.attach(servoPin2);
 
     Servo2.write(10);
-    delay(delaySec);
+    delay(delaySec-250);
     Servo2.detach();
 }
 
@@ -232,7 +232,7 @@ void rotateCounter(int delaySec){
     Servo2.attach(servoPin2);
 
     Servo2.write(360);
-    delay(delaySec);
+    delay(delaySec+150);
     Servo2.detach();
 }
 
@@ -252,7 +252,7 @@ void PProtate(int delaySec){
     Servo2.attach(servoPin2);
 
     Servo2.write(10);
-    delay(delaySec-100);
+    delay(delaySec-300);
     Servo2.detach();
 }
 
