@@ -109,7 +109,7 @@ class User_Dashboard_Window(QMainWindow):
         self.TotalBalance = QLabel(self)
         self.TotalBalance.setText("Total Balance: PHP " + str(self.balance))
         self.TotalBalance.move(300,600 + 75 + 75)
-        self.TotalBalance.resize(550,50)
+        self.TotalBalance.resize(1000,50)
         self.TotalBalance.setStyleSheet("QLabel { font-size: 40px; font-family: Roboto;font-weight: 1000; font-style: normal; color:  #699913; }" )
 
     def username_retrieve(self, email):
@@ -166,8 +166,8 @@ class User_Dashboard_Window(QMainWindow):
             # Execute query to verify user credentials
             cursor.execute("SELECT * FROM plastics WHERE user_id = ?", (id,))
             data = cursor.fetchall()
-            print("DATA: ")
-            print(data)
+            #print("DATA: ")
+            #print(data)
 
             # Close cursor and connection
             cursor.close()
