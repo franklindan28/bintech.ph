@@ -82,7 +82,7 @@ class Loading_Process(QMainWindow):
         # self.progress += 1
         # self.progress_bar.setValue(self.progress)
 
-#        if self.labels:
+        #if self.labels:
     	result_detect = []
 
     	while(len(result_detect) <= 5):
@@ -198,22 +198,23 @@ class Loading_Process(QMainWindow):
 	    # QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
 	    # QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
 	    self.add()
-	#else:
-        #    print("No Detection or No Camera")
-            # self.progress += 2
-            # self.progress_bar.setValue(self.progress)
-        #         #print(get_data())
-        #     # else:
-        #     #     print("No detections")
-        #     if (cv2.waitKey(30) == 27):
-        #         break
+        
+        #else:
+            #    print("No Detection or No Camera")
+                # self.progress += 2
+                # self.progress_bar.setValue(self.progress)
+            #         #print(get_data())
+            #     # else:
+            #     #     print("No detections")
+            #     if (cv2.waitKey(30) == 27):
+            #         break
 
 
-        # if self.progress >= 100:
-        #     self.timer.stop()
-        #     QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
-        #     QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
-        #     self.showFullScreen()
+            # if self.progress >= 100:
+            #     self.timer.stop()
+            #     QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
+            #     QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
+            #     self.showFullScreen()
 
     def reset_loading(self):
         self.progress = 0
