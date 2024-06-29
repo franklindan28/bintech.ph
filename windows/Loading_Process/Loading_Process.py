@@ -82,7 +82,7 @@ class Loading_Process(QMainWindow):
         # self.progress_bar.setValue(self.progress)
 
         # if self.labels:
-    	result_detect = []
+        result_detect = []
 
         while(len(result_detect) <= 5):
             self.success, frame = self.cap.read()
