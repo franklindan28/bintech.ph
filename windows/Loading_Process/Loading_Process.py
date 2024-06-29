@@ -78,126 +78,125 @@ class Loading_Process(QMainWindow):
         self.timer.start(1000)
 
     def update_progress(self):
-          
         # self.progress += 1
         # self.progress_bar.setValue(self.progress)
 
-        #if self.labels:
+        # if self.labels:
     	result_detect = []
 
-    	while(len(result_detect) <= 5):
-        	self.success, frame = self.cap.read()
-        	frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
+        while(len(result_detect) <= 5):
+            self.success, frame = self.cap.read()
+            frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
 
-	        #pprint(dir(model(frame)[0]))
-	        result = self.model(frame,max_det=1)[0]
-	        detections=sv.Detections.from_yolov8(result)
-	        self.labels = [
-	            f"{self.model.model.names[class_id]} {confidence:0.2f}"
-	            for _, confidence, class_id, _
-	            in detections
-	            ]
-	        
-	        box_annotator = sv.BoxAnnotator(
-	            thickness=2,                                                                      
-	            text_thickness=2,
-	            text_scale=1
-	        )
+            #pprint(dir(model(frame)[0]))
+            result = self.model(frame,max_det=1)[0]
+            detections=sv.Detections.from_yolov8(result)
+            self.labels = [
+                f"{self.model.model.names[class_id]} {confidence:0.2f}"
+                for _, confidence, class_id, _
+                in detections
+                ]
+            
+            box_annotator = sv.BoxAnnotator(
+                thickness=2,                                                                      
+                text_thickness=2,
+                text_scale=1
+            )
 
-	        if self.labels:
-	            frame = box_annotator.annotate(scene=frame, detections=detections, labels = self.labels)
-	            print(f"FRAME: {frame})")
-	            print(f"self.labels: {self.labels})")
-	            extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
-	            var_data = extract
-	            
-	            result_detect.append(var_data)
+            if self.labels:
+                frame = box_annotator.annotate(scene=frame, detections=detections, labels = self.labels)
+                print(f"FRAME: {frame})")
+                print(f"self.labels: {self.labels})")
+                extract = " ".join(re.findall("[a-zA-Z]+", str(self.labels[0])))
+                var_data = extract
+                
+                result_detect.append(var_data)
 
-	        else:
-	            print("No detections")
+            else:
+                print("No detections")
 
-	        time.sleep(1)
+            time.sleep(1)
+        
+        print(f"result_detect: {result_detect}")
+        # print(f"result_detect: {self.find_most_frequent_max_string(result_detect)}")
 
-	    print(f"result_detect: {result_detect}")
-	    # print(f"result_detect: {self.find_most_frequent_max_string(result_detect)}")
+        result_data = self.find_most_frequent_max_string(result_detect)
+        print(f"final_result_detect: {result_detect}")
 
-	    result_data = self.find_most_frequent_max_string(result_detect)
-	    print(f"final_result_detect: {result_detect}")
+        # CLOSE THE DOOR
+        self.sendToArduino("CLOSE")
+        time.sleep(2)
+        self.resutlt.setText(f"RESULT: {result_data}")
 
-	    # CLOSE THE DOOR
-	    self.sendToArduino("CLOSE")
-	    time.sleep(2)
-	    self.resutlt.setText(f"RESULT: {result_data}")
+        message = result_data.upper()
+        print("message_upper: ")
+        print(message)
 
-	    message = result_data.upper()
-	    print("message_upper: ")
-	    print(message)
+        self.sendToArduino(result_data)
 
-	    self.sendToArduino(result_data)
+        points = 0
+        balance = 0
 
-	    points = 0
-	    balance = 0
+        if (result_data == "HDPE"):
+            points = 5
+            balance = 1.5
 
-	    if (result_data == "HDPE"):
-	        points = 5
-	        balance = 1.5
+        elif(result_data == "PP"):
+            points = 2
+            balance = 0.5
 
-	    elif(result_data == "PP"):
-	        points = 2
-	        balance = 0.5
+        elif(result_data == "PET"):
+            points = 3
+            balance = 1
 
-	    elif(result_data == "PET"):
-	        points = 3
-	        balance = 1
+        else:
+            points = 1
+            balance = 0.25
 
-	    else:
-	        points = 1
-	        balance = 0.25
+        conn = sqlite3.connect('bintech.db')
+        cursor = conn.cursor()
 
-	    conn = sqlite3.connect('bintech.db')
-	    cursor = conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
+                id INTEGER PRIMARY KEY,
+                user_id INTEGER,
+                plastic_type TEXT NOT NULL,
+                date_created datetime default current_timestamp,
+                FOREIGN KEY (user_id) 
+                    REFERENCES users (id) 
+                        ON DELETE CASCADE 
+                        ON UPDATE NO ACTION                    
+                )''')
+        
+        cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
+        user = cursor.fetchone()
+        # print(user)
+        id = user[0]
 
-	    cursor.execute('''CREATE TABLE IF NOT EXISTS plastics (
-	            id INTEGER PRIMARY KEY,
-	            user_id INTEGER,
-	            plastic_type TEXT NOT NULL,
-	            date_created datetime default current_timestamp,
-	            FOREIGN KEY (user_id) 
-	                REFERENCES users (id) 
-	                    ON DELETE CASCADE 
-	                    ON UPDATE NO ACTION                    
-	         )''')
-	    
-	    cursor.execute("SELECT * FROM users WHERE username = ?", (self.user_name,))
-	    user = cursor.fetchone()
-	    # print(user)
-	    id = user[0]
+        total_points = user[5] + points
+        total_balance = user[6] + balance
 
-	    total_points = user[5] + points
-	    total_balance = user[6] + balance
+        cursor.execute("UPDATE users SET points = ?, balance = ? WHERE username = ?", (total_points, total_balance, self.user_name))
+        conn.commit()
 
-	    cursor.execute("UPDATE users SET points = ?, balance = ? WHERE username = ?", (total_points, total_balance, self.user_name))
-	    conn.commit()
+        cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, result_data))
+        conn.commit()
 
-	    cursor.execute("INSERT INTO plastics (user_id, plastic_type) VALUES (?,?)", (id, result_data))
-	    conn.commit()
+        # Close cursor and connection
+        cursor.close()
+        conn.close()
+        
+        timeLoading = 20
 
-	    # Close cursor and connection
-	    cursor.close()
-	    conn.close()
-	    
-	    timeLoading = 20
+        for i in range(timeLoading):
+            time.sleep(1)
+            self.progress = (i/timeLoading) * 100
+            self.progress = int(self.progress)
+            self.progress_bar.setValue(self.progress)
 
-	    for i in range(timeLoading):
-	        time.sleep(1)
-	        self.progress = (i/timeLoading) * 100
-	        self.progress = int(self.progress)
-	        self.progress_bar.setValue(self.progress)
-
-	    self.timer.stop()
-	    # QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
-	    # QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
-	    self.add()
+        self.timer.stop()
+        # QTimer.singleShot(2000, self.reset_loading)  # Reset loading after 2 seconds
+        # QTimer.singleShot(2000, self.add)  # Reset loading after 2 seconds
+        self.add()
         
         #else:
             #    print("No Detection or No Camera")
