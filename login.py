@@ -189,6 +189,7 @@ if __name__ == "__main__":
                     #     var_data = extract
                     #     print(var_data)
                         
+                    cap.release()
 
                     app = QApplication(sys.argv)
                     ex = Login(labels, ser, cap, success, model)
@@ -217,5 +218,4 @@ if __name__ == "__main__":
     else:
         print("cannot open camera")
     
-    cap.release()
     cv2.destroyAllWindows()

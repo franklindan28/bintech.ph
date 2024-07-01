@@ -42,8 +42,10 @@ def main():
     if cap.isOpened():
         success, img = cap.read()
         print(success)
+        cap.release()
+        cap.open(0) 
         if success:
-            while True:                                                                                             
+            while True:                                                                                            
                 success, frame = cap.read()
                 frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
         
@@ -64,6 +66,16 @@ def main():
                     print(extract)
                 else:
                     print("No detections")
+
+                # c
+                if (cv2.waitKey(30) == 99):
+                    # cap.release()
+                    cap.release()
+                    print("sleep 5 seconds")
+                    time.sleep(5)
+                    cap.open(0)
+
+                # esc
                 if (cv2.waitKey(30) == 27):
                     break	
         else:

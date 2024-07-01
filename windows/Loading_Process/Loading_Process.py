@@ -83,7 +83,7 @@ class Loading_Process(QMainWindow):
 
         # if self.labels:
         result_detect = []
-
+        self.cap.open(0)
         while(len(result_detect) <= 10):
             self.success, frame = self.cap.read()
             frame = cv2.resize(frame, (320,320),interpolation=cv2.INTER_LINEAR)
@@ -116,11 +116,8 @@ class Loading_Process(QMainWindow):
                 print("No detections")
 
             time.sleep(1)
-        
+
         self.cap.release()
-
-        print(f"old_result_detect: {result_detect}")
-
         # result_detect.pop(0)
         # result_detect.pop(0)
         # result_detect.pop(0)
