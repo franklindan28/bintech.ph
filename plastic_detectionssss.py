@@ -12,7 +12,7 @@ import re
 import time
 import torch
 
-torch.cuda.set_device(0)
+#torch.cuda.set_device(0)
 '''
 def parse_arguments() ->argparse.Namespace:
     parser = argparse.ArgumentParser(description="Plastic Classification")
@@ -31,7 +31,7 @@ def main():
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 320)
 
-    model = YOLO('best 2.pt', task='detect')
+    model = YOLO('best.pt', task='detect')
    
     box_annotator = sv.BoxAnnotator(
         thickness=2,                                                                      

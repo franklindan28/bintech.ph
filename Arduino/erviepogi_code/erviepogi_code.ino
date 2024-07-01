@@ -115,7 +115,7 @@ void loop() {
       digitalWrite(ledPins[0], LOW);  
       delay(1000);
 
-      rotate(0);
+      flip();
     }
     else if (plastic_input.equals("HDPE"))
     {
@@ -140,7 +140,7 @@ void loop() {
 
       PProtate(2550);
     }
-    else if (plastic_input.equals("OTHERS"))
+    else if (plastic_input.equals("OTHER") || plastic_input.equals("OTHERS"))
     {
       Serial.println("OTHERS.");
      
